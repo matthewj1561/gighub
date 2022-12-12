@@ -16,7 +16,7 @@ function Comment(props) {
   useEffect(() => {
     //`http://localhost:5000/user?email=${user.email}`
     axios
-      .get(`http://localhost:5000/user?email=${props.commentinfo.userEmail}`)
+      .get(`https://gighubapi.herokuapp.com/user?email=${props.commentinfo.userEmail}`)
       .then((res) => {
         setCommenter(res.data);
       });

@@ -39,7 +39,7 @@ function FeedBody() {
   const user = contextArray[0];
 
   const refreshPosts = () => {
-    axios.get("http://localhost:5000/posts").then((res) => {
+    axios.get("https://gighubapi.herokuapp.com/posts").then((res) => {
       setPosts(res.data.reverse());
     });
   };
@@ -69,7 +69,7 @@ function FeedBody() {
   );
 
   useEffect(() => {
-    axios.get("http://localhost:5000/posts").then((res) => {
+    axios.get("https://gighubapi.herokuapp.com/posts").then((res) => {
       setPosts(res.data.reverse());
     });
   }, []);
@@ -79,7 +79,7 @@ function FeedBody() {
     handleClose();
 
     axios
-      .post(`http://localhost:5000/posts/add`, {
+      .post(`https://gighubapi.herokuapp.com/posts/add`, {
         userEmail: user.email,
         date: new Date().toISOString().slice(0, 10),
         body: postRef.current.value,
@@ -87,7 +87,7 @@ function FeedBody() {
         likes: 0,
       })
       .then(() => {
-        axios.get("http://localhost:5000/posts").then((res) => {
+        axios.get("https://gighubapi.herokuapp.com/posts").then((res) => {
           setPosts(res.data.reverse());
         });
       });

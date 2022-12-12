@@ -58,7 +58,7 @@ function Post(props) {
 
   // on mounting get the poster's info
   useEffect(() => {
-    axios.get(`http://localhost:5000/user?email=${user.email}`).then((res) => {
+    axios.get(`https://gighubapi.herokuapp.com/user?email=${user.email}`).then((res) => {
       setUserInfo(res.data);
     });
   }, []);
@@ -67,7 +67,7 @@ function Post(props) {
     if (commentBody.current.value != "") {
       handleClick();
       axios
-        .put(`http://localhost:5000/posts/addcomment`, {
+        .put(`https://gighubapi.herokuapp.com/posts/addcomment`, {
           postId: props.postinfo._id,
           userEmail: user.email,
           date: new Date().toISOString().slice(0, 10),
@@ -82,7 +82,7 @@ function Post(props) {
 
   const saveLike = () => {
     axios
-      .put(`http://localhost:5000/posts/addlike`, {
+      .put(`https://gighubapi.herokuapp.com/posts/addlike`, {
         postId: props.postinfo._id,
       })
       .then(() => {

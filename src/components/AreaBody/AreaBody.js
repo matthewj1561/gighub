@@ -63,12 +63,12 @@ function AreaBody() {
   // Get the current user info
   useEffect(() => {
     axios
-      .get(`http://localhost:5000/user?email=${user?.email}`)
+      .get(`https://gighubapi.herokuapp.com/user?email=${user?.email}`)
       .then((res1) => {
         setUserInfo(res1.data);
         axios
           .get(
-            `http://localhost:5000/area/getonearea?city=${res1.data.city}&state=${res1.data.state}`
+            `https://gighubapi.herokuapp.com/area/getonearea?city=${res1.data.city}&state=${res1.data.state}`
           )
           .then((res) => {
             setPayInfo(res.data.areaData.pay);
@@ -175,7 +175,7 @@ function AreaBody() {
     setDemand(null);
     setTips("");
 
-    axios.put("http://localhost:5000/area/postsurvey", submissionObject);
+    axios.put("https://gighubapi.herokuapp.com/area/postsurvey", submissionObject);
   };
 
   //This switch statement determines the JSX that will be injected

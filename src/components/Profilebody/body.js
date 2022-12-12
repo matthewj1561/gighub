@@ -24,14 +24,14 @@ function ProfileBody() {
     const lastN = lastNameRef.current.value;
 
     axios
-      .put(`http://localhost:5000/user/addname`, {
+      .put(`https://gighubapi.herokuapp.com/user/addname`, {
         email: user.email,
         first: firstN,
         last: lastN,
       })
       .then(() => {
         axios
-          .get(`http://localhost:5000/user?email=${user.email}`)
+          .get(`https://gighubapi.herokuapp.com/user?email=${user.email}`)
           .then((res) => {
             setUserInfo(res.data);
           });
@@ -51,7 +51,7 @@ function ProfileBody() {
   // };
 
   useEffect(() => {
-    axios.get(`http://localhost:5000/user?email=${user.email}`).then((res) => {
+    axios.get(`https://gighubapi.herokuapp.com/user?email=${user.email}`).then((res) => {
       setUserInfo(res.data);
     });
   }, []);

@@ -24,23 +24,19 @@ function App() {
   navigator.geolocation.getCurrentPosition((position) => {
     axios
       .get(
-        `http://api.positionstack.com/v1/reverse?access_key=99f6359f2b3e62fbe2747ee9c25c5b8f&query=${position.coords.latitude}, ${position.coords.longitude}`
+        `https://api.positionstack.com/v1/reverse?access_key=99f6359f2b3e62fbe2747ee9c25c5b8f&query=${position.coords.latitude}, ${position.coords.longitude}`
       )
       .then((res) => {
-        axios
-        .put(`http://localhost:5000/user/addlocation`, {
+        axios.put(`https://gighubapi.herokuapp.com/user/addlocation`, {
           email: user.email,
           city: res.data.data[0].locality,
-          state: res.data.data[0].region
+          state: res.data.data[0].region,
         });
-        axios
-        .post(`http://localhost:5000/area/addarea`,{
-            city: res.data.data[0].locality,
-            state: res.data.data[0].region
-          })
-          
-          
-        
+        axios.post(`https://gighubapi.herokuapp.com/area/addarea`, {
+          city: res.data.data[0].locality,
+          state: res.data.data[0].region,
+        });
+
         // console.log(res.data.data[0].region);
       });
   });
