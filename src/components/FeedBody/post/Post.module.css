@@ -1,0 +1,39 @@
+.mainPost {
+  border: 2px solid;
+  border-color: rgb(25, 118, 210);
+  border-radius: 5px;
+  padding: 5px;
+  background-color: rgb(255, 255, 255);
+  color: black;
+  margin: 50px 0px;
+  box-shadow: 3px 2px #888888;
+}
+
+.date {
+  font-size: x-small;
+}
+
+.icon {
+  background-color: transparent;
+  border: transparent;
+}
+
+.icon:hover {
+  color: rgb(25, 118, 210);
+  background-color: aliceblue;
+  border-radius: 10px;
+  transition: all 0.2s;
+}
+
+.sendButton {
+  float: right;
+  position: absolute;
+  right: 15px;
+  top: 23px;
+}
+
+.comments {
+  margin: 5px 0;
+
+
+}
