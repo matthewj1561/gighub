@@ -8,10 +8,11 @@ import {
   IconButton,
   Snackbar,
   Alert,
+  TextField,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import { Grid } from "@mui/material";
-import classes from "./FeedBody.module.css";
+import classes from "./GigBody.module.css";
 import Post from "./post/Post";
 import axios from "axios";
 import { userContext } from "../../App";
@@ -24,7 +25,7 @@ const modalStyles = {
   p: 4,
 };
 
-function FeedBody() {
+function GigBody() {
   const postRef = useRef();
   const [ToastOpen, setToastOpen] = useState(false);
   const [posts, setPosts] = useState([]);
@@ -34,8 +35,21 @@ function FeedBody() {
   const contextArray = useContext(userContext);
   const user = contextArray[0];
 
+  const [formData, setFormData] = useState({
+    title: "",
+    description: "",
+    wage: "",
+    requiredSkills: "",
+    contactInfo: "",
+  });
+
+  const handleInputChange = (event) => {
+    const { name, value } = event.target;
+    setFormData({ ...formData, [name]: value });
+  };
+
   const refreshPosts = () => {
-    axios.get(`${process.env.REACT_APP_BASE_URL}/posts`).then((res) => {
+    axios.get(`${process.env.REACT_APP_BASE_URL}/gigposts`).then((res) => {
       setPosts(res.data.reverse());
     });
   };
@@ -65,7 +79,7 @@ function FeedBody() {
   );
 
   useEffect(() => {
-    axios.get(`${process.env.REACT_APP_BASE_URL}/posts`).then((res) => {
+    axios.get(`${process.env.REACT_APP_BASE_URL}/gigposts`).then((res) => {
       setPosts(res.data.reverse());
     });
   }, []);
@@ -75,37 +89,23 @@ function FeedBody() {
     handleClose();
 
     axios
-      .post(`${process.env.REACT_APP_BASE_URL}/posts/add`, {
+      .post(`${process.env.REACT_APP_BASE_URL}/gigposts/add`, {
         userEmail: user.email,
         date: new Date().toISOString().slice(0, 10),
-        body: postRef.current.value,
+        title: formData.title,
+        description: formData.description,
+        wage: formData.wage,
+        requiredSkills: formData.requiredSkills,
+        contactInfo: formData.contactInfo,
         comments: [],
         likes: 0,
       })
       .then(() => {
-        axios.get(`${process.env.REACT_APP_BASE_URL}/posts`).then((res) => {
+        axios.get(`${process.env.REACT_APP_BASE_URL}/gigposts`).then((res) => {
           setPosts(res.data.reverse());
         });
       });
   };
-
-  navigator.geolocation.getCurrentPosition((position) => {
-    axios
-      .get(
-        `https://maps.googleapis.com/maps/api/geocode/json?latlng=${position.coords.latitude},${position.coords.longitude}&result_type=locality&key=AIzaSyDk7QukyH3p3FmHpeohuk7JbN51P5hHEiY`
-      )
-      .then((res) => {
-        axios.put(`${process.env.REACT_APP_BASE_URL}/user/addlocation`, {
-          email: user.email,
-          city: res.data.results[0].address_components[0].long_name,
-          state: res.data.results[0].address_components[2].long_name,
-        });
-        axios.post(`${process.env.REACT_APP_BASE_URL}/area/addarea`, {
-          city: res.data.results[0].address_components[0].long_name,
-          state: res.data.results[0].address_components[2].long_name,
-        });
-      });
-  });
 
   return (
     <React.Fragment>
@@ -139,21 +139,68 @@ function FeedBody() {
         >
           <Box sx={modalStyles}>
             <Typography variant="h6" gutterBottom>
-              Your Post
+              Your Gig Posting
             </Typography>
             <Grid container spacing={3}>
-              <Grid item xs={12} sm={12}>
+              <Grid item xs={12}>
+                <TextField
+                  multiline
+                  label="Title"
+                  id="my-input"
+                  fullWidth
+                  name="title"
+                  value={formData.title}
+                  onChange={handleInputChange}
+                />
+              </Grid>
+              <Grid item xs={12}>
                 <TextareaAutosize
-                  ref={postRef}
-                  autoFocus
                   required
                   id="body"
-                  name="body"
                   minRows={8}
-                  placeholder="What do you want to say?"
-                  style={{ width: 250 }}
+                  placeholder="Description"
+                  style={{ width: "98%" }}
                   fullwidth="true"
                   variant="standard"
+                  name="description"
+                  value={formData.description}
+                  onChange={handleInputChange}
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <TextField
+                  inputRef={null}
+                  multiline
+                  label="Wage"
+                  id="my-input"
+                  fullWidth
+                  name="wage"
+                  value={formData.wage}
+                  onChange={handleInputChange}
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <TextField
+                  inputRef={null}
+                  multiline
+                  label="Required Skills"
+                  id="my-input"
+                  fullWidth
+                  name="requiredSkills"
+                  value={formData.requiredSkills}
+                  onChange={handleInputChange}
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <TextField
+                  inputRef={null}
+                  multiline
+                  label="Contact Info (email or phone)"
+                  id="my-input"
+                  fullWidth
+                  name="contactInfo"
+                  value={formData.contactInfo}
+                  onChange={handleInputChange}
                 />
               </Grid>
               <Grid item xs={12} sm={12}>
@@ -165,8 +212,8 @@ function FeedBody() {
           </Box>
         </Modal>
         <Grid container>
-          <Grid item sm={0} md={3}></Grid>
-          <Grid item sm={12} md={6}>
+          <Grid item sm={0} md={2}></Grid>
+          <Grid item sm={12} md={8}>
             <Grid container spacing={2}>
               <Grid item xs={4}>
                 <Button onClick={handleOpen} variant="contained">
@@ -187,11 +234,11 @@ function FeedBody() {
               </Grid>
             </Grid>
           </Grid>
-          <Grid item sm={0} md={3}></Grid>
+          <Grid item sm={0} md={2}></Grid>
         </Grid>
       </div>
     </React.Fragment>
   );
 }
 
-export default FeedBody;
+export default GigBody;

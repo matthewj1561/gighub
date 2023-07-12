@@ -8,10 +8,11 @@ import { IconButton } from "@mui/material";
 import ThumbUpIcon from "@mui/icons-material/ThumbUpOutlined";
 import SendOutlinedIcon from "@mui/icons-material/SendOutlined";
 import React, { useRef, useContext, useState, useEffect } from "react";
-import { Snackbar, TextField } from "@mui/material";
+import { Snackbar, TextField, Box } from "@mui/material";
 import { userContext } from "../../../App";
+import { SosOutlined } from "@mui/icons-material";
 
-function Post({ postInfo, refresh }) {
+function Post(props) {
   //get the global user context
   const contextArray = useContext(userContext);
   const user = contextArray[0];
@@ -59,24 +60,26 @@ function Post({ postInfo, refresh }) {
   // on mounting get the poster's info
   useEffect(() => {
     axios
-      .get(`${process.env.REACT_APP_BASE_URL}/user?email=${postInfo?.userEmail}`)
+      .get(
+        `${process.env.REACT_APP_BASE_URL}/user?email=${props.postInfo.userEmail}`
+      )
       .then((res) => {
         setUserInfo(res.data);
       });
-  }, [postInfo?.userEmail]);
+  }, []);
 
   const saveComment = () => {
     if (commentBody.current.value != "") {
       handleClick();
       axios
-        .put(`${process.env.REACT_APP_BASE_URL}/posts/addcomment`, {
-          postId: postInfo._id,
+        .put(`${process.env.REACT_APP_BASE_URL}/gigposts/addcomment`, {
+          postId: props.postInfo._id,
           userEmail: user.email,
           date: new Date().toISOString().slice(0, 10),
           body: commentBody.current.value,
         })
         .then(() => {
-          refresh();
+          props.refresh();
           commentBody.current.value = "";
         });
     }
@@ -84,11 +87,11 @@ function Post({ postInfo, refresh }) {
 
   const saveLike = () => {
     axios
-      .put(`${process.env.REACT_APP_BASE_URL}/posts/addlike`, {
-        postId: postInfo._id,
+      .put(`${process.env.REACT_APP_BASE_URL}/gigposts/addlike`, {
+        postId: props.postInfo._id,
       })
       .then(() => {
-        postInfo.refresh();
+        props.refresh();
       });
   };
 
@@ -111,21 +114,28 @@ function Post({ postInfo, refresh }) {
             />
           </Grid>
           <Grid item sx={{ padding: 1 }} s={2}>
-            <span>
-              {userInfo.given_name} {userInfo.family_name}
-            </span>
+            <span>{props.postInfo.title}</span>
           </Grid>
           <Grid item sx={{ padding: 1 }} s={12}>
-            <span className={classes.date}>{postInfo?.date}</span>
+            <span className={classes.date}>{props.postInfo.date}</span>
           </Grid>
         </Grid>
         <Grid container>
-          <Grid xs={12} sx={{ textAlign: "left", padding: 2 }} item>
-            <p>{postInfo?.body}</p>
+          <Grid xs={8} sx={{ textAlign: "left", padding: 2 }} item>
+            <p>{props.postInfo.description}</p>
+          </Grid>
+          <Grid xs={4} sx={{ textAlign: "left", padding: 2, border: 1 }} item>
+            <Box>
+              <ul>
+                <li>Wage: {props.postInfo.wage}/hr</li>
+                <li>Required Skills: {props.postInfo.requiredSkills}</li>
+                <li>Contact: {props.postInfo.contactInfo}</li>
+              </ul>
+            </Box>
           </Grid>
           <Grid item>
             <ThumbUpIcon sx={{ height: 15, color: "blue" }} />
-            {postInfo?.likes}
+            {props.postInfo.likes}
           </Grid>
         </Grid>
       </div>
@@ -145,7 +155,7 @@ function Post({ postInfo, refresh }) {
       <hr />
       <Grid container>
         <Grid item xs={12} sx={{ padding: 1 }}>
-          {postInfo?.comments.map((comment, index) => {
+          {props.postInfo.comments.map((comment, index) => {
             return <Comment key={index} commentinfo={comment}></Comment>;
           })}
         </Grid>

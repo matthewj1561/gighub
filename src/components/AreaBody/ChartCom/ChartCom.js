@@ -4,7 +4,7 @@ import { Chart, registerables } from "chart.js";
 function ChartCom(props) {
   const chartRef = useRef();
   const labels = props.labels;
-  const values = Object.values(props.data);
+  const values = Object.values(props?.data ? props.data : {});
 
   Chart.register(...registerables);
 
@@ -46,7 +46,7 @@ function ChartCom(props) {
     let myChart = new Chart(chartRef.current, config);
 
     return () => myChart.destroy();
-  }, [props.data]);
+  }, [props?.data]);
 
   return <canvas ref={chartRef}></canvas>;
 }

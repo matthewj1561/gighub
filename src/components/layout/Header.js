@@ -35,7 +35,7 @@ function Header(props) {
 
   const handleCloseNavMenu = (e) => {
     let page = e.target.textContent;
-    console.log(page);
+
     if (page == "Feed") {
       navigate("/feed");
       setAnchorElNav(null);

@@ -8,7 +8,6 @@ const Landing = () => {
   const contextArray = useContext(userContext);
   const isAuth = contextArray[2];
   const navigate = useNavigate();
-  console.log(isAuth);
   if (isAuth) {
     navigate("/feed");
   }

@@ -63,12 +63,13 @@ function AreaBody() {
   // Get the current user info
   useEffect(() => {
     axios
-      .get(`https://gighubapi.herokuapp.com/user?email=${user?.email}`)
+      .get(`${process.env.REACT_APP_BASE_URL}/user?email=${user?.email}`)
       .then((res1) => {
         setUserInfo(res1.data);
+
         axios
           .get(
-            `https://gighubapi.herokuapp.com/area/getonearea?city=${res1.data.city}&state=${res1.data.state}`
+            `${process.env.REACT_APP_BASE_URL}/area/getonearea?city=${res1.data.city}&state=${res1.data.state}`
           )
           .then((res) => {
             setPayInfo(res.data.areaData.pay);
@@ -86,7 +87,7 @@ function AreaBody() {
     top: "50%",
     left: "50%",
     transform: "translate(-50%, -50%)",
-    width: 400,
+    width: 250,
     bgcolor: "background.paper",
     border: "2px solid #000",
     boxShadow: 24,
@@ -141,7 +142,6 @@ function AreaBody() {
   };
   // Deletes hotpsot item, in switch 3
   const deleteItem = (event) => {
-    console.log(event);
     let values = [...hotspotValues];
     let removingIndex = values.indexOf(event);
     values = values.splice(removingIndex, 1);
@@ -160,8 +160,10 @@ function AreaBody() {
     };
     for (let field in submissionObject) {
       if (submissionObject[field] == null) {
-        setErrorToastOpen(true);
-        return;
+        if (field != "tips") {
+          setErrorToastOpen(true);
+          return;
+        }
       }
     }
     //Close the modal and send confirmation message
@@ -175,7 +177,10 @@ function AreaBody() {
     setDemand(null);
     setTips("");
 
-    axios.put("https://gighubapi.herokuapp.com/area/postsurvey", submissionObject);
+    axios.put(
+      `${process.env.REACT_APP_BASE_URL}/area/postsurvey`,
+      submissionObject
+    );
   };
 
   //This switch statement determines the JSX that will be injected
@@ -280,7 +285,7 @@ function AreaBody() {
             often?
           </Typography>
           <hr />
-          {hotspotValues.map((v, i) => {
+          {hotspotValues?.map((v, i) => {
             return (
               <Grid
                 key={i}
@@ -308,7 +313,6 @@ function AreaBody() {
                         setHotspotValues(values);
                       } else {
                         values.splice(removingIndex, 1);
-                        console.log(removingIndex);
                         setHotspotValues(values);
                       }
                     }}
@@ -400,7 +404,7 @@ function AreaBody() {
       break;
   }
 
-  return (
+  return userInfo.city && userInfo.state ? (
     <React.Fragment>
       <h1>{`Stats for: ${userInfo.city}, ${userInfo.state} `}</h1>
       <Snackbar
@@ -445,7 +449,7 @@ function AreaBody() {
           </Typography>
           <Typography variant="h5">{`Question ${questionCounter} / 5`}</Typography>
           <Grid container spacing={3}>
-            <Grid item xs={12} sm={12}>
+            <Grid item sx={{ marginBottom: "40px" }} xs={12} sm={12}>
               {question}
             </Grid>
             <Grid item sx={{ position: "absolute", bottom: "10%" }} xs={6}>
@@ -458,9 +462,14 @@ function AreaBody() {
                 Previous
               </Button>
             </Grid>
+
             <Grid
               item
-              sx={{ position: "absolute", bottom: "10%", right: "10%" }}
+              sx={{
+                position: "absolute",
+                bottom: "10%",
+                right: "10%",
+              }}
               xs={6}
             >
               <Button
@@ -543,7 +552,7 @@ function AreaBody() {
         <Grid item lg={6} sm={12} md={6} xs={12} xl={6}>
           <h1>Hot Spots</h1>
           <ul className={classes.tipList}>
-            {hotSpots.map((hotspot) => {
+            {hotSpots?.map((hotspot) => {
               return <li>{hotspot}</li>;
             })}
           </ul>
@@ -552,13 +561,15 @@ function AreaBody() {
         <Grid item sm={12} xs={12} md={6} lg={6} xl={6}>
           <h1>Gig Tips</h1>
           <ul className={classes.tipList}>
-            {savedTips.map((tip) => {
+            {savedTips?.map((tip) => {
               return <li>{tip}</li>;
             })}
           </ul>
         </Grid>
       </Grid>
     </React.Fragment>
+  ) : (
+    <h1>Error retrieving user location</h1>
   );
 }
 

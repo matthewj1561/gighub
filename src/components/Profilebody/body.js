@@ -16,7 +16,7 @@ function ProfileBody() {
     picture: "",
     email: "",
     city: "",
-    state: ""
+    state: "",
   });
 
   const saveName = () => {
@@ -24,14 +24,14 @@ function ProfileBody() {
     const lastN = lastNameRef.current.value;
 
     axios
-      .put(`https://gighubapi.herokuapp.com/user/addname`, {
+      .put(`${process.env.REACT_APP_BASE_URL}/user/addname`, {
         email: user.email,
         first: firstN,
         last: lastN,
       })
       .then(() => {
         axios
-          .get(`https://gighubapi.herokuapp.com/user?email=${user.email}`)
+          .get(`${process.env.REACT_APP_BASE_URL}/user?email=${user.email}`)
           .then((res) => {
             setUserInfo(res.data);
           });
@@ -42,18 +42,19 @@ function ProfileBody() {
   //   navigator.geolocation.getCurrentPosition((position) => {
   //     axios
   //       .get(
-  //         `http://api.positionstack.com/v1/reverse?access_key=99f6359f2b3e62fbe2747ee9c25c5b8f&query=${position.coords.latitude}, ${position.coords.longitude}`
+  //         `http://api.tack.com/v1/reverse?access_key=99f6359f2b3e62fbe2747ee9c25c5b8f&query=${position.coords.latitude}, ${position.coords.longitude}`
   //       )
   //       .then((res) => {
-  //         console.log(res.data.data[0]);
   //       });
   //   });
   // };
 
   useEffect(() => {
-    axios.get(`https://gighubapi.herokuapp.com/user?email=${user.email}`).then((res) => {
-      setUserInfo(res.data);
-    });
+    axios
+      .get(`${process.env.REACT_APP_BASE_URL}/user?email=${user.email}`)
+      .then((res) => {
+        setUserInfo(res.data);
+      });
   }, []);
 
   return (

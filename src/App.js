@@ -1,5 +1,4 @@
 import logo from "./logo.svg";
-import axios from "axios";
 import React, { createContext } from "react";
 import "./App.css";
 import Layout from "./components/layout/Layout";
@@ -11,7 +10,7 @@ import Loading from "./components/loading/Loading";
 import Area from "./pages/Area";
 import Feed from "./pages/Feed";
 import Gig from "./pages/Gig";
-
+// https://gighubapi.herokuapp.com
 export const userContext = createContext();
 
 function App() {
@@ -21,25 +20,6 @@ function App() {
   let city = null;
   let state = null;
 
-  navigator.geolocation.getCurrentPosition((position) => {
-    axios
-      .get(
-        `https://api.positionstack.com/v1/reverse?access_key=99f6359f2b3e62fbe2747ee9c25c5b8f&query=${position.coords.latitude}, ${position.coords.longitude}`
-      )
-      .then((res) => {
-        axios.put(`https://gighubapi.herokuapp.com/user/addlocation`, {
-          email: user.email,
-          city: res.data.data[0].locality,
-          state: res.data.data[0].region,
-        });
-        axios.post(`https://gighubapi.herokuapp.com/area/addarea`, {
-          city: res.data.data[0].locality,
-          state: res.data.data[0].region,
-        });
-
-        // console.log(res.data.data[0].region);
-      });
-  });
 
   return (
     <userContext.Provider
