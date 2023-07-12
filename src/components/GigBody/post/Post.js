@@ -21,6 +21,9 @@ function Post(props) {
   const feedbackMessage = "Saved!";
   const commentBody = useRef();
 
+  // Expanded comments
+  const [openComments, setOpenComments] = useState(false);
+
   // States
   const [ToastOpen, setToastOpen] = React.useState(false);
   const [userInfo, setUserInfo] = useState({
@@ -147,17 +150,26 @@ function Post(props) {
           </Button>
         </Grid>
         <Grid item xs={6}>
-          <Button className={classes.icon}>
-            <h4 className={classes.comments}>Comments</h4>
+          <Button
+            className={classes.icon}
+            onClick={() => {
+              setOpenComments(!openComments);
+            }}
+          >
+            <h4 className={classes.comments}>{openComments ? 'Show Less Comments' : 'Show More Comments'}</h4>
           </Button>
         </Grid>
       </Grid>
       <hr />
       <Grid container>
         <Grid item xs={12} sx={{ padding: 1 }}>
-          {props.postInfo.comments.map((comment, index) => {
-            return <Comment key={index} commentinfo={comment}></Comment>;
-          })}
+          {openComments ? (
+            props.postInfo.comments.map((comment, index) => {
+              return <Comment key={index} commentinfo={comment}></Comment>;
+            })
+          ) : (
+            <Comment commentinfo={props.postInfo.comments?.[0]}></Comment>
+          )}
         </Grid>
       </Grid>
       <Grid container>

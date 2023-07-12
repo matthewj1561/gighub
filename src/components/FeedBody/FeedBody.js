@@ -8,6 +8,8 @@ import {
   IconButton,
   Snackbar,
   Alert,
+  Select,
+  MenuItem,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import { Grid } from "@mui/material";
@@ -33,6 +35,36 @@ function FeedBody() {
   const handleClose = () => setOpen(false);
   const contextArray = useContext(userContext);
   const user = contextArray[0];
+  const [areas, setAreas] = useState([]);
+  const [userInfo, setUserInfo] = useState({
+    given_name: "",
+    family_name: "",
+    picture: "",
+    email: "",
+  });
+  const [selectedArea, setSelectedArea] = useState(
+    `${userInfo?.city},${userInfo?.state}`
+  );
+  console.log(userInfo);
+  useEffect(() => {
+    axios
+      .get(`${process.env.REACT_APP_BASE_URL}/user?email=${user?.email}`)
+      .then((res) => {
+        setUserInfo(res.data);
+      });
+  }, [user]);
+
+  useEffect(() => {
+    axios
+      .get(`${process.env.REACT_APP_BASE_URL}/area/getallareas`)
+      .then((res) => {
+        setAreas(res.data);
+      });
+  }, []);
+
+  useEffect(() => {
+    setSelectedArea(`${userInfo?.city},${userInfo?.state}`);
+  }, [userInfo]);
 
   const refreshPosts = () => {
     axios.get(`${process.env.REACT_APP_BASE_URL}/posts`).then((res) => {
@@ -81,6 +113,8 @@ function FeedBody() {
         body: postRef.current.value,
         comments: [],
         likes: 0,
+        city: userInfo?.city,
+        state: userInfo?.state,
       })
       .then(() => {
         axios.get(`${process.env.REACT_APP_BASE_URL}/posts`).then((res) => {
@@ -88,24 +122,6 @@ function FeedBody() {
         });
       });
   };
-
-  navigator.geolocation.getCurrentPosition((position) => {
-    axios
-      .get(
-        `https://maps.googleapis.com/maps/api/geocode/json?latlng=${position.coords.latitude},${position.coords.longitude}&result_type=locality&key=AIzaSyDk7QukyH3p3FmHpeohuk7JbN51P5hHEiY`
-      )
-      .then((res) => {
-        axios.put(`${process.env.REACT_APP_BASE_URL}/user/addlocation`, {
-          email: user.email,
-          city: res.data.results[0].address_components[0].long_name,
-          state: res.data.results[0].address_components[2].long_name,
-        });
-        axios.post(`${process.env.REACT_APP_BASE_URL}/area/addarea`, {
-          city: res.data.results[0].address_components[0].long_name,
-          state: res.data.results[0].address_components[2].long_name,
-        });
-      });
-  });
 
   return (
     <React.Fragment>
@@ -168,13 +184,44 @@ function FeedBody() {
           <Grid item sm={0} md={3}></Grid>
           <Grid item sm={12} md={6}>
             <Grid container spacing={2}>
-              <Grid item xs={4}>
-                <Button onClick={handleOpen} variant="contained">
-                  New Post
-                </Button>
+              <Grid item container xs={6}>
+                <Grid item xs={6}>
+                  <Button onClick={handleOpen} variant="contained">
+                    New Post
+                  </Button>
+                </Grid>
+                <Grid item xs={6}>
+                  <Select
+                    md={6}
+                    name="feed-location"
+                    id="feed-location"
+                    value={selectedArea}
+                    onChange={(event) => {
+                      console.log(event?.target?.value);
+                      const value = event?.target?.value;
+                      const parsedValue = value.split(",");
+                      setSelectedArea(`${parsedValue[0]},${parsedValue[1]}`);
+                      axios
+                        .get(
+                          `${process.env.REACT_APP_BASE_URL}/posts/getbylocation?city=${parsedValue[0]}&state=${parsedValue[1]}`
+                        )
+                        .then((res) => {
+                          setPosts(res.data.reverse());
+                        });
+                    }}
+                  >
+                    {areas.map((area) => {
+                      return (
+                        <MenuItem
+                          value={`${area.areaCity},${area.areaState}`}
+                        >{`${area.areaCity}, ${area.areaState}`}</MenuItem>
+                      );
+                    })}
+                  </Select>
+                </Grid>
               </Grid>
               <Grid item xs={12}>
-                {posts.map((post, index) => {
+                {posts.length ? posts.map((post, index) => {
                   return (
                     <Post
                       refresh={refreshPosts}
@@ -183,7 +230,7 @@ function FeedBody() {
                       postInfo={post}
                     ></Post>
                   );
-                })}
+                }) : <h1>No posts for this location.</h1>}
               </Grid>
             </Grid>
           </Grid>

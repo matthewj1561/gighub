@@ -17,7 +17,7 @@ function Comment(props) {
     //`http://localhost:5000/user?email=${user.email}`
     axios
       .get(
-        `${process.env.REACT_APP_BASE_URL}/user?email=${props.commentinfo.userEmail}`
+        `${process.env.REACT_APP_BASE_URL}/user?email=${props.commentinfo?.userEmail}`
       )
       .then((res) => {
         setCommenter(res.data);
@@ -25,22 +25,24 @@ function Comment(props) {
   }, []);
 
   return (
-    <div className={classes.mainComment}>
-      <Grid container spacing={1}>
-        <Grid item s={2}>
-          <Avatar src={commenter.picture}></Avatar>
-        </Grid>
-        <Grid item>
-          <p>
-            {commenter.given_name} {commenter.family_name}
-          </p>
-        </Grid>
+    props.commentinfo?.body && (
+      <div className={classes.mainComment}>
+        <Grid container spacing={1}>
+          <Grid item s={2}>
+            <Avatar src={commenter.picture}></Avatar>
+          </Grid>
+          <Grid item>
+            <p>
+              {commenter.given_name} {commenter.family_name}
+            </p>
+          </Grid>
 
-        <Grid item xs={12} sx={{ textAlign: "left" }}>
-          {props.commentinfo.body}
+          <Grid item xs={12} sx={{ textAlign: "left" }}>
+            {props.commentinfo?.body}
+          </Grid>
         </Grid>
-      </Grid>
-    </div>
+      </div>
+    )
   );
 }
 

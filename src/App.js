@@ -20,13 +20,29 @@ function App() {
   const { user, isAuthenticated, isLoading } = useAuth0();
   const { logout } = useAuth0();
   const { loginWithRedirect } = useAuth0();
-  let city = null;
-  let state = null;
 
   useEffect(() => {
     console.log(user);
     axios.post(`${process.env.REACT_APP_BASE_URL}/user/adduser`, {
       ...user,
+    });
+
+    navigator.geolocation.getCurrentPosition((position) => {
+      axios
+        .get(
+          `https://maps.googleapis.com/maps/api/geocode/json?latlng=${position.coords.latitude},${position.coords.longitude}&result_type=locality&key=AIzaSyDk7QukyH3p3FmHpeohuk7JbN51P5hHEiY`
+        )
+        .then((res) => {
+          axios.put(`${process.env.REACT_APP_BASE_URL}/user/addlocation`, {
+            email: user?.email,
+            city: res.data.results[0].address_components[0].long_name,
+            state: res.data.results[0].address_components[2].long_name,
+          });
+          axios.post(`${process.env.REACT_APP_BASE_URL}/area/addarea`, {
+            city: res.data.results[0].address_components[0].long_name,
+            state: res.data.results[0].address_components[2].long_name,
+          });
+        });
     });
   }, [user]);
 

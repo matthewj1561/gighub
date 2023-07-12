@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
@@ -16,12 +16,14 @@ import { userContext } from "../../App";
 import React, { useContext } from "react";
 import AdbIcon from "@mui/icons-material/Adb";
 import Logo from "../../images/gighubLogo.png";
+import axios from "axios";
 
 const pages = ["Feed", "Area", "Gigs"];
 const settings = ["Profile", "Logout"];
 
 function Header(props) {
   const contextArray = useContext(userContext);
+  const user = contextArray[0]
   const navigate = useNavigate();
 
   const [anchorElNav, setAnchorElNav] = useState(null);
@@ -59,6 +61,21 @@ function Header(props) {
       setAnchorElUser(null);
     }
   };
+
+  const [userInfo, setUserInfo] = useState({
+    given_name: "",
+    family_name: "",
+    picture: "",
+    email: "",
+  });
+  useEffect(() => {
+    axios
+      .get(`${process.env.REACT_APP_BASE_URL}/user?email=${user?.email}`)
+      .then((res) => {
+        setUserInfo(res.data);
+      });
+  }, [user]);
+
   let topRightFeature;
   let pagesdrop = null;
   let pageswide = null;
@@ -118,7 +135,7 @@ function Header(props) {
       <Box sx={{ flexGrow: 0 }}>
         <Tooltip title="Open settings">
           <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-            <Avatar alt={contextArray[0].name} src={contextArray[0].picture} />
+            <Avatar alt={contextArray[0].name} src={userInfo?.picture} />
           </IconButton>
         </Tooltip>
         <Menu

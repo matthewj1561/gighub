@@ -9,6 +9,8 @@ import {
   Snackbar,
   Alert,
   TextField,
+  Select,
+  MenuItem,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import { Grid } from "@mui/material";
@@ -34,6 +36,36 @@ function GigBody() {
   const handleClose = () => setOpen(false);
   const contextArray = useContext(userContext);
   const user = contextArray[0];
+  const [areas, setAreas] = useState([]);
+  const [userInfo, setUserInfo] = useState({
+    given_name: "",
+    family_name: "",
+    picture: "",
+    email: "",
+  });
+  const [selectedArea, setSelectedArea] = useState(
+    `${userInfo?.city},${userInfo?.state}`
+  );
+  console.log(userInfo);
+  useEffect(() => {
+    axios
+      .get(`${process.env.REACT_APP_BASE_URL}/user?email=${user?.email}`)
+      .then((res) => {
+        setUserInfo(res.data);
+      });
+  }, [user]);
+
+  useEffect(() => {
+    axios
+      .get(`${process.env.REACT_APP_BASE_URL}/area/getallareas`)
+      .then((res) => {
+        setAreas(res.data);
+      });
+  }, []);
+
+  useEffect(() => {
+    setSelectedArea(`${userInfo?.city},${userInfo?.state}`);
+  }, [userInfo]);
 
   const [formData, setFormData] = useState({
     title: "",
@@ -99,6 +131,8 @@ function GigBody() {
         contactInfo: formData.contactInfo,
         comments: [],
         likes: 0,
+        city: userInfo?.city,
+        state: userInfo?.state,
       })
       .then(() => {
         axios.get(`${process.env.REACT_APP_BASE_URL}/gigposts`).then((res) => {
@@ -106,7 +140,7 @@ function GigBody() {
         });
       });
   };
-
+  console.log(posts)
   return (
     <React.Fragment>
       <div className={classes.mainContents}>
@@ -125,7 +159,6 @@ function GigBody() {
             Posted!
           </Alert>
         </Snackbar>
-
         <Modal
           sx={{
             display: "flex",
@@ -215,13 +248,44 @@ function GigBody() {
           <Grid item sm={0} md={2}></Grid>
           <Grid item sm={12} md={8}>
             <Grid container spacing={2}>
-              <Grid item xs={4}>
-                <Button onClick={handleOpen} variant="contained">
-                  New Post
-                </Button>
+              <Grid item container xs={6}>
+                <Grid item xs={6}>
+                  <Button onClick={handleOpen} variant="contained">
+                    New Post
+                  </Button>
+                </Grid>
+                <Grid item xs={6}>
+                  <Select
+                    md={6}
+                    name="feed-location"
+                    id="feed-location"
+                    value={selectedArea}
+                    onChange={(event) => {
+                      console.log(event?.target?.value);
+                      const value = event?.target?.value;
+                      const parsedValue = value.split(",");
+                      setSelectedArea(`${parsedValue[0]},${parsedValue[1]}`);
+                      axios
+                        .get(
+                          `${process.env.REACT_APP_BASE_URL}/gigposts/getbylocation?city=${parsedValue[0]}&state=${parsedValue[1]}`
+                        )
+                        .then((res) => {
+                          setPosts(res.data.reverse());
+                        });
+                    }}
+                  >
+                    {areas.map((area) => {
+                      return (
+                        <MenuItem
+                          value={`${area.areaCity},${area.areaState}`}
+                        >{`${area.areaCity}, ${area.areaState}`}</MenuItem>
+                      );
+                    })}
+                  </Select>
+                </Grid>
               </Grid>
               <Grid item xs={12}>
-                {posts.map((post, index) => {
+                {posts.length ? posts.map((post, index) => {
                   return (
                     <Post
                       refresh={refreshPosts}
@@ -230,7 +294,7 @@ function GigBody() {
                       postInfo={post}
                     ></Post>
                   );
-                })}
+                }) : <h1>No posts for this location.</h1>}
               </Grid>
             </Grid>
           </Grid>

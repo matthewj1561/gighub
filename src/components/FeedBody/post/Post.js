@@ -20,6 +20,9 @@ function Post({ postInfo, refresh }) {
   const feedbackMessage = "Saved!";
   const commentBody = useRef();
 
+  // Expanded comments
+  const [openComments, setOpenComments] = useState(false);
+
   // States
   const [ToastOpen, setToastOpen] = React.useState(false);
   const [userInfo, setUserInfo] = useState({
@@ -59,7 +62,9 @@ function Post({ postInfo, refresh }) {
   // on mounting get the poster's info
   useEffect(() => {
     axios
-      .get(`${process.env.REACT_APP_BASE_URL}/user?email=${postInfo?.userEmail}`)
+      .get(
+        `${process.env.REACT_APP_BASE_URL}/user?email=${postInfo?.userEmail}`
+      )
       .then((res) => {
         setUserInfo(res.data);
       });
@@ -88,7 +93,7 @@ function Post({ postInfo, refresh }) {
         postId: postInfo._id,
       })
       .then(() => {
-        postInfo.refresh();
+        refresh();
       });
   };
 
@@ -137,17 +142,28 @@ function Post({ postInfo, refresh }) {
           </Button>
         </Grid>
         <Grid item xs={6}>
-          <Button className={classes.icon}>
-            <h4 className={classes.comments}>Comments</h4>
+          <Button
+            className={classes.icon}
+            onClick={() => {
+              setOpenComments(!openComments);
+            }}
+          >
+            <h4 className={classes.comments}>
+              {openComments ? "Show Less Comments" : "Show More Comments"}
+            </h4>
           </Button>
         </Grid>
       </Grid>
       <hr />
       <Grid container>
         <Grid item xs={12} sx={{ padding: 1 }}>
-          {postInfo?.comments.map((comment, index) => {
-            return <Comment key={index} commentinfo={comment}></Comment>;
-          })}
+          {openComments ? (
+            postInfo?.comments.map((comment, index) => {
+              return <Comment key={index} commentinfo={comment}></Comment>;
+            })
+          ) : (
+            <Comment commentinfo={postInfo?.comments?.[0]}></Comment>
+          )}
         </Grid>
       </Grid>
       <Grid container>
