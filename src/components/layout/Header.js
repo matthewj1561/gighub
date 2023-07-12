@@ -15,6 +15,7 @@ import MenuItem from "@mui/material/MenuItem";
 import { userContext } from "../../App";
 import React, { useContext } from "react";
 import AdbIcon from "@mui/icons-material/Adb";
+import Logo from "../../images/gighubLogo.png";
 
 const pages = ["Feed", "Area", "Gigs"];
 const settings = ["Profile", "Logout"];
@@ -149,7 +150,8 @@ function Header(props) {
     <AppBar position="static">
       <Container maxWidth="xl">
         <Toolbar disableGutters>
-          <AdbIcon sx={{ display: { xs: "none", md: "flex" }, mr: 1 }} />
+
+          <img src={Logo} alt="Gighub Logo" style={{width: '35px', marginRight: '10px'}} />
           <Typography
             variant="h6"
             noWrap

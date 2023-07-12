@@ -1,5 +1,5 @@
 import logo from "./logo.svg";
-import React, { createContext } from "react";
+import React, { createContext, useEffect } from "react";
 import "./App.css";
 import Layout from "./components/layout/Layout";
 import { Route, Routes } from "react-router-dom";
@@ -10,7 +10,10 @@ import Loading from "./components/loading/Loading";
 import Area from "./pages/Area";
 import Feed from "./pages/Feed";
 import Gig from "./pages/Gig";
+import axios from "axios";
 // https://gighubapi.herokuapp.com
+// https://gighub-back.onrender.com
+// http://localhost:5000
 export const userContext = createContext();
 
 function App() {
@@ -20,6 +23,12 @@ function App() {
   let city = null;
   let state = null;
 
+  useEffect(() => {
+    console.log(user);
+    axios.post(`${process.env.REACT_APP_BASE_URL}/user/adduser`, {
+      ...user,
+    });
+  }, [user]);
 
   return (
     <userContext.Provider
