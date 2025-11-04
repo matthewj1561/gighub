@@ -4,16 +4,12 @@ import "./App.css";
 import Layout from "./components/layout/Layout";
 import { Route, Routes } from "react-router-dom";
 import Landing from "./pages/Landing";
-import { useAuth0, withAuthenticationRequired } from "@auth0/auth0-react";
+import { useAuth0 } from "@auth0/auth0-react";
 import Profile from "./pages/Profile";
-import Loading from "./components/loading/Loading";
 import Area from "./pages/Area";
 import Feed from "./pages/Feed";
 import Gig from "./pages/Gig";
 import axios from "axios";
-// https://gighubapi.herokuapp.com
-// https://gighub-back.onrender.com
-// http://localhost:5000
 export const userContext = createContext();
 
 function App() {
@@ -30,7 +26,7 @@ function App() {
     navigator.geolocation.getCurrentPosition((position) => {
       axios
         .get(
-          `https://maps.googleapis.com/maps/api/geocode/json?latlng=${position.coords.latitude},${position.coords.longitude}&result_type=locality&key=AIzaSyDk7QukyH3p3FmHpeohuk7JbN51P5hHEiY`
+          `https://maps.googleapis.com/maps/api/geocode/json?latlng=${position.coords.latitude},${position.coords.longitude}&result_type=locality&key=${process.env.REACT_APP_GOOGLE_CLOUD_KEY}`
         )
         .then((res) => {
           axios.put(`${process.env.REACT_APP_BASE_URL}/user/addlocation`, {
@@ -50,12 +46,7 @@ function App() {
     <userContext.Provider
       value={[user, loginWithRedirect, isAuthenticated, logout]}
     >
-      <Layout
-      // loginFunc={loginWithRedirect}
-      // isLoggedIn={isAuthenticated}
-      // logoutFunc={logout}
-      // user={user}
-      >
+      <Layout>
         <Routes>
           <Route path="/" element={<Landing />}></Route>
           <Route path="/profile" element={<Profile />} />
