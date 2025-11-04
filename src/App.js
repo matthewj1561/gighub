@@ -26,7 +26,7 @@ function App() {
     navigator.geolocation.getCurrentPosition((position) => {
       axios
         .get(
-          `https://maps.googleapis.com/maps/api/geocode/json?latlng=${position.coords.latitude},${position.coords.longitude}&result_type=locality&key=${process.env.REACT_APP_GOOGLE_CLOUD_KEY}`
+          `${process.env.REACT_APP_BASE_URL}/area/getUserLocation?lat=${position.coords.latitude}&lng=${position.coords.longitude}`
         )
         .then((res) => {
           axios.put(`${process.env.REACT_APP_BASE_URL}/user/addlocation`, {
